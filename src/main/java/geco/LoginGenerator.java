@@ -1,6 +1,7 @@
 package geco;
 
 import java.text.Normalizer;
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -22,7 +23,7 @@ public class LoginGenerator {
      * Genere un login unique a partir d'un nom et d'un prenom en prenant la premiere lettre du prenom, concatenee avec
      * les 3 premieres lettres du nom, le tout mis en lettres capitales et desaccentue. Le login genere doit etre unique
      * par rapport a la liste des logins existants. En cas de doublon, on incremente le doublon d'un indice. Ci dessous des
-     * exemples :
+     * exemples
      * <ul>
      *     <li>Paul Dupond -> PDUP </li>
      *     <li>Pierre Dupard -> PDUP1</li>
@@ -37,10 +38,20 @@ public class LoginGenerator {
         String p = deAccent(prenom.substring(0,1).toUpperCase());
         String n = deAccent(nom.substring(0,3).toUpperCase());
         String login = p+n ;
+
         if (loginService.loginExists(login)) {
-            login = login + "1" ;
+            List<String> l = loginService.findAllLoginsStartingWith(login);
+            int inx = l.size();
+            login= login+inx;
+            loginService.addLogin(login);
+
+
         }
-        loginService.addLogin(login);
+        else{
+            loginService.addLogin(login);
+        }
+
+
         return login;
     }
 
